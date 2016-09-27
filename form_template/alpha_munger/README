@@ -1,0 +1,10 @@
+这个Tornado应用定义了两个请求处理类：IndexHandler和MungedPageHandler。
+IndexHandler类简单地渲染了index.html中的模板，其中包括一个允许用户POST一个源文本（在source域中）和一个替换文本（在change域中）到/poem的表单。
+
+MungedPageHandler类用于处理到/poem的POST请求。当一个请求到达时，它对传入的数据进行一些基本的处理，然后为浏览器渲染模板。
+map_by_first_letter方法将传入的文本（从source域）分割成单词，然后创建一个字典，
+其中每个字母表中的字母对应文本中所有以其开头的单词（我们将其放入一个叫作source_map的变量）。
+再把这个字典和用户在替代文本（表单的change域）中指定的内容一起传给模板文件munged.html。
+此外，我们还将Python标准库的random.choice函数传入模板，这个函数以一个列表作为输入，返回列表中的任一元素。
+
+在munged.html中，我们迭代替代文本中的每行，再迭代每行中的每个单词。如果当前单词的第一个字母是source_map字典的一个键，我们使用random.choice函数从字典的值中随机选择一个单词并展示它。如果字典的键中没有这个字母，我们展示源文本中的原始单词。每个单词包括一个span标签，其中的class属性指定这个单词是替换后的（class="replaced"）还是原始的（class="unchanged"）。
