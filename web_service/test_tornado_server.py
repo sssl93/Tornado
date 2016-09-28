@@ -18,7 +18,7 @@ class IndexHandler(tornado.web.RequestHandler):
         key = self.get_argument('key', )
         now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         data = key + ':>>>' + now
-        time.sleep(0.1)
+        time.sleep(0.5)
         print data
         data = json.dumps((data, now))
         self.write(data)

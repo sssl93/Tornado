@@ -16,16 +16,16 @@ define("port", default=8000, help="run on the given port", type=int)
 
 
 class IndexHandler(tornado.web.RequestHandler):
-    def get(self):
+    def get(self, key):
         client = tornado.httpclient.HTTPClient()
-        response = client.fetch("http://localhost:10000/?key=1")
+        response = client.fetch("http://localhost:10000/?key=%s" % key)
         body = json.loads(response.body)
         raw_oldest_tweet_at = body[1]
         now = datetime.datetime.now()
         oldest_tweet_at = datetime.datetime.strptime(raw_oldest_tweet_at,
                                                      "%Y-%m-%d %H:%M:%S")
-        seconds_diff = time.mktime(now.timetuple()) - \
-                       time.mktime(oldest_tweet_at.timetuple())
+        seconds_diff = time.mktime(now.timetuple()) - time.mktime(oldest_tweet_at.timetuple())
+        print str(key) + ':>>>' + str(seconds_diff)
         self.write("""
 <div style="text-align: center">
     <div style="font-size: 72px">%s</div>
@@ -36,7 +36,7 @@ class IndexHandler(tornado.web.RequestHandler):
 
 if __name__ == "__main__":
     tornado.options.parse_command_line()
-    app = tornado.web.Application(handlers=[(r"/", IndexHandler)])
+    app = tornado.web.Application(handlers=[(r"/(.*)", IndexHandler)])
     http_server = tornado.httpserver.HTTPServer(app)
     http_server.listen(options.port)
     tornado.ioloop.IOLoop.instance().start()
