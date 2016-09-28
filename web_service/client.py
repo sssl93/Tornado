@@ -1,8 +1,10 @@
 # coding:utf-8
-from tweet_rate import IndexHandler
 import threading, json
 import tornado
 import time
+import tornado.web
+import tornado.httpclient
+from server import ServerSync
 
 
 class MyThread(threading.Thread):
@@ -19,8 +21,10 @@ class MyThread(threading.Thread):
 
     def run(self):
         # 异步调用
-        client = tornado.httpclient.HTTPClient()
-        response = client.fetch("http://localhost:10000/?key=%s" % self.key, callback=self.on_response)
+        # client = tornado.httpclient.AsyncHTTPClient()
+        # response = client.fetch("http://localhost:10000/?key=%s" % self.key, callback=self.on_response)
+        import requests
+        requests.get('http://localhost:8001/%s' % self.key)
 
     def on_response(self, response):
         body = json.loads(response.body)
