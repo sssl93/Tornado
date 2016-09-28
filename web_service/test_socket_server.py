@@ -7,6 +7,18 @@ from time import ctime
 host = '127.0.0.1'
 port = 9999
 addr = (host, port)
+RSTR = '''HTTP/1.1 200 OK
+Proxy-Connection: Keep-Alive
+Connection: Keep-Alive
+Content-Length: 8296
+Via: 1.1 JA-ISA02
+Expires: Fri, 18 May 2012 09:05:56 GMT
+Date: Fri, 18 May 2012 09:05:56 GMT
+Content-Type: text/html;charset=gb2312
+Server: BWS/1.0
+Cache-Control: private
+
+test'''
 
 
 class Servers(SRH):
@@ -19,8 +31,12 @@ class Servers(SRH):
                 break
             print data
             print "RECV from ", self.client_address[0]
-            now = ctime()
-            self.request.send(now)
+            import datetime
+            now = str(datetime.datetime.now())
+            print now
+            self.request.sendall('HTTP/1.1 200 OK')
+            self.connection.close()
+            break
 
 
 if __name__ == '__main__':
