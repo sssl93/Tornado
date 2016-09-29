@@ -1,7 +1,8 @@
 # coding:utf-8
-# 就像在shopping_cart例子一样，在购物者添加书籍到购物车时库存量会实时更新。不同之处在于shopping_cart2是一个持久的WebSocket连接取代了每次长轮询更新中重新打开的HTTP请求。
+# webSocket方式实现长轮询
 # http://demo.pythoner.com/itt2zh/ch5.html#ch5-2-2
 import tornado.web
+import tornado.websocket
 import tornado.httpserver
 import tornado.ioloop
 import tornado.options
@@ -14,11 +15,12 @@ class ShoppingCart(object):
     carts = {}
 
     def register(self, callback):
-        # 注册回调函数
         self.callbacks.append(callback)
 
+    def unregister(self, callback):
+        self.callbacks.remove(callback)
+
     def moveItemToCart(self, session):
-        # 加入购物车
         if session in self.carts:
             return
 
@@ -26,7 +28,6 @@ class ShoppingCart(object):
         self.notifyCallbacks()
 
     def removeItemFromCart(self, session):
-        # 移除购物车
         if session not in self.carts:
             return
 
@@ -34,18 +35,10 @@ class ShoppingCart(object):
         self.notifyCallbacks()
 
     def notifyCallbacks(self):
-        # 通知回调
-        for c in self.callbacks:
-            self.callbackHelper(c)
-        # 清空回调列表
-        self.callbacks = []
-
-    def callbackHelper(self, callback):
-        # 回调
-        callback(self.getInventoryCount())
+        for callback in self.callbacks:
+            callback(self.getInventoryCount())
 
     def getInventoryCount(self):
-        # 获取商品数量
         return self.totalInventory - len(self.carts)
 
 
@@ -53,7 +46,7 @@ class DetailHandler(tornado.web.RequestHandler):
     def get(self):
         session = uuid4()
         count = self.application.shoppingCart.getInventoryCount()
-        self.render("index.html", session=session, count=count)
+        self.render("index2.html", session=session, count=count)
 
 
 class CartHandler(tornado.web.RequestHandler):
@@ -73,14 +66,18 @@ class CartHandler(tornado.web.RequestHandler):
             self.set_status(400)
 
 
-class StatusHandler(tornado.web.RequestHandler):
-    @tornado.web.asynchronous
-    def get(self):
-        self.application.shoppingCart.register(self.on_message)
+class StatusHandler(tornado.websocket.WebSocketHandler):
+    def open(self):
+        self.application.shoppingCart.register(self.callback)
 
-    def on_message(self, count):
-        self.write('{"inventoryCount":"%d"}' % count)
-        self.finish()
+    def on_close(self):
+        self.application.shoppingCart.unregister(self.callback)
+
+    def on_message(self, message):
+        pass
+
+    def callback(self, count):
+        self.write_message('{"inventoryCount":"%d"}' % count)
 
 
 class Application(tornado.web.Application):
@@ -103,6 +100,7 @@ class Application(tornado.web.Application):
 
 if __name__ == '__main__':
     tornado.options.parse_command_line()
+
     app = Application()
     server = tornado.httpserver.HTTPServer(app)
     server.listen(8000)

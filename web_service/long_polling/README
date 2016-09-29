@@ -1,0 +1,2 @@
+SHOPPING_CART每次长轮询更新中重新打开的HTTP请求。
+SHOPPING_CART2是一个持久的WebSocket连接
