@@ -17,6 +17,7 @@ define("port", default=8000, help="run on the given port", type=int)
 
 class IndexHandler(tornado.web.RequestHandler):
     def get(self, key):
+        # 显示从获取请求到response所花费的时间
         client = tornado.httpclient.HTTPClient()
         response = client.fetch("http://localhost:10000/?key=%s" % key)
         body = json.loads(response.body)

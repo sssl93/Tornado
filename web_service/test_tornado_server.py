@@ -25,6 +25,7 @@ class IndexHandler(tornado.web.RequestHandler):
 
 
 if __name__ == "__main__":
+    # tornado同步server
     tornado.options.parse_command_line()
     app = tornado.web.Application(handlers=[(r"/", IndexHandler)])
     http_server = tornado.httpserver.HTTPServer(app)
