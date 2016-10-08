@@ -1,0 +1,21 @@
+{
+  'params': {
+    'args': [
+      'damo',
+      'system',
+      'admin',
+      'note.note',
+      'create',
+      {
+        'color': 8,
+        'create_uid': 1,
+        'memo': 'This is another note'
+      }
+    ],
+    'method': 'execute',
+    'service': 'object'
+  },
+  'jsonrpc': '2.0',
+  'method': 'call',
+  'id': 241176636
+}

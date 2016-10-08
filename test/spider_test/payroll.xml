@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+    <data>
+        <record model="ir.module.category" id="module_category_payroll_access_control">
+            <field name="name">Payroll Access Control</field>
+            <field ID="sequence">5</field>
+        </record>
+
+        <!-- 薪酬操作员-->
+        <record id="group_payroll_computor" model="res.groups">
+            <field name="name">薪酬操作员</field>
+            <field name="initial_group" eval="True"/>
+            <field name="category_id" ref="module_category_payroll_access_control"/>
+            <field name="implied_ids"
+                   eval="[
+                   (4, ref('hr_base.group_employee_manager')),
+                   (4, ref('social_security.group_social_security_read_access')),
+                   (4, ref('export_excel.group_export_excel')),
+                   (4, ref('personal_account_balance.group_personal_account_balance_management_manager')),
+                   (4, ref('payroll_custom_params.group_custom_params_admin_access'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root'))]"/>
+        </record>
+
+        <!--薪酬配置员 -->
+        <record id="group_payroll_configer" model="res.groups">
+            <field name="name">薪酬配置员</field>
+            <field name="initial_group" eval="True"/>
+            <field name="category_id" ref="module_category_payroll_access_control"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('hr_base.group_employee_manager')),
+                   (4, ref('social_security.group_social_security_admin_access')),
+                   (4, ref('personal_account_balance.group_personal_account_balance_management_edit')),
+                   (4, ref('payroll_custom_params.group_custom_params_admin_access'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root'))]"/>
+        </record>
+
+        <!-- 薪酬审核员 -->
+        <record id="group_payroll_auditor" model="res.groups">
+            <field name="name">薪酬审核员</field>
+            <field name="initial_group" eval="True"/>
+            <field name="category_id" ref="module_category_payroll_access_control"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('hr_base.group_employee_manager')),
+                   (4, ref('social_security.group_social_security_read_access')),
+                   (4, ref('personal_account_balance.group_personal_account_balance_management_edit')),
+                   (4, ref('payroll_custom_params.group_custom_params_admin_access'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root'))]"/>
+        </record>
+1111
+        <!-- 薪酬管理员-->
+        <record id="group_payroll_manager" model="res.groups">
+            <field name="name">薪酬管理员</field>
+            <field name="initial_group" eval="True"/>
+            <field name="category_id" ref="module_category_payroll_access_control"/>
+            <field name="implied_ids"
+                   eval="[
+                   (4, ref('group_payroll_computor')), (4, ref('group_payroll_configer')),
+                   (4, ref('group_payroll_auditor')),
+                   (4, ref('personal_account_balance.group_personal_account_balance_management_manager')),
+                   (4, ref('payroll_custom_params.group_custom_params_admin_access'))]"/>
+            <field name="users" eval="[(4, ref('base.user_root'))]"/>
+        </record>
+1111111111111
+    </data>
+</openerp>
